@@ -5,37 +5,33 @@ class ContainerCart {
     }
 
     list(id) {
-        const product = this.cart.find(product => product.id == id)
-        return product || { error: `Producto no encontrado` }
+        const cart = this.cart.find(cart => cart.id == id)
+        return cart || { error: `Carrito no encontrado` }
     }
 
     listAll() {
         return [...this.cart]
     }
 
-    save(product) {
-        const newproduct = { ...product, id: ++this.id }
-        this.cart.push(newproduct)
-        return { msg: "Producto Agregado", data: newproduct }
+    save(cart) {
+        const newCart = { ...cart, id: 1 }
+        this.cart.push(newCart)
+        return { msg: "Producto Agregado al carrito", data: newCart }
     }
 
-    update(product, id) {
-        const newproduct = { id: Number(id), ...product }
-        const index = this.cart.findIndex(p => p.id == id)
-        if (index !== -1) {
-            this.cart[index] = newproduct
-            return { msg: "Producto actualizado", data: newproduct }
-        } else {
-            return { error: `Producto no encontrado` }
-        }
+    create(cart) {
+        const newCart = cart
+        const response = { id: ++this.id, newCart }
+        this.cart.push(response)
+        return response.id
     }
 
     delete(id) {
         const index = this.cart.findIndex(product => product.id == id)
         if (index !== -1) {
-            return { msg: "Producto Eliminado", data: this.cart.splice(index, 1) }
+            return { msg: "Producto Eliminado del carrito", data: this.cart.splice(index, 1) }
         } else {
-            return { error: `Producto no encontrado` }
+            return { error: `Carrito no encontrado` }
         }
     }
 
