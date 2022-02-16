@@ -1,7 +1,7 @@
 /* -------------------------------- Modulos -------------------------------- */
 const express = require("express");
 const routerCart = express.Router();
- 
+
 const ContainerFileCarts = require("../containers/fileCart.js");
 const ContainerFileProducts = require("../containers/fileProducts.js");
 
@@ -53,22 +53,24 @@ routerCart.post("/", (req, res) => {
 });
 
 //Para incorporar productos al carrito por su id de producto
-routerCart.post("/:id/productos", (req, res) => {
+routerCart.post("/:idProd/productos/", (req, res) => {
   try {
-    const { id } = req.params;
-    if (!id) {
+    const { idProd } = req.params;
+    const idCart = 1;
+
+    if (!idProd) {
       res.status(400).json({ msg: "Debe ingresar un id del producto" });
     } else {
-      const product = productsApi.list(id).data;
-      let cart = cartApi.list(1);
+      const product = productsApi.list(idProd).data;
+      let cart = cartApi.list(idCart);
 
       cart = {
-        id: 1,
+        id: idCart,
         timestamp: cart.timestamp,
-        products: [...cart.products,product],
+        products: [...cart.products, product],
       };
 
-      const response = cartApi.save(cart, 1);
+      const response = cartApi.save(cart, idCart);
       res.status(200).json(response);
     }
   } catch (error) {
