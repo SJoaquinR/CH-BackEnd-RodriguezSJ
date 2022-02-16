@@ -2,11 +2,13 @@
 const express = require("express");
 const routerProducts = express.Router();
 
-const ContainerProducts = require("../containers/products.js");
+//const ContainerProducts = require("../containers/products.js");
+const ContainerFileProducts = require("../containers/fileProducts.js");
 const ContainerAdmin = require("../containers/security.js");
 
 /* -------------------------------- Instancia de Express ------------------------ */
-const productsApi = new ContainerProducts();
+//const productsApi = new ContainerProducts();
+const fileProductsApi = new ContainerFileProducts();
 const roleAdminApi = new ContainerAdmin();
 /* -------------------------------- Rutas -------------------------------- */
 // https://www.iconfinder.com/free_icons
@@ -27,10 +29,10 @@ routerProducts.get("/:id?", (req, res) => {
     const { id } = req.params;
 
     if (id) {
-      const product = productsApi.list(id);
+      const product = fileProductsApi.list(id);
       res.status(200).json(product);
     } else {
-      const products = productsApi.listAll();
+      const products = fileProductsApi.listAll();
       res.status(200).json(products);
     }
   } catch (error) {
@@ -56,7 +58,7 @@ routerProducts.post("/", (req, res) => {
         stock: stock,
       };
 
-      const response = productsApi.save(producto);
+      const response = fileProductsApi.save(producto);
       res.status(200).json(response);
     }
   } catch (error) {
@@ -85,7 +87,7 @@ routerProducts.put("/:id", (req, res) => {
         stock: stock,
       };
 
-      const response = productsApi.update(producto, id);
+      const response = fileProductsApi.update(producto, id);
       res.status(200).json(response);
     }
   } catch (error) {
@@ -101,7 +103,7 @@ routerProducts.delete("/:id", (req, res) => {
     } else {
       const { id } = req.params;
 
-      const response = productsApi.delete(id);
+      const response = fileProductsApi.delete(id);
       res.status(200).json(response);
     }
   } catch (error) {

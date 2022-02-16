@@ -2,11 +2,12 @@
 const express = require("express");
 const routerCart = express.Router();
 
-const ContainerCart = require("../containers/cart.js");
-const ContainerProducts = require("../containers/products.js");
+//const ContainerCart = require("../containers/cart.js");
+const ContainerFileCarts = require("../containers/fileCart.js");
+const ContainerProducts = require("../containers/fileProducts.js");
 
 /* -------------------------------- Instancia de Express ------------------------ */
-const cartApi = new ContainerCart();
+const cartApi = new ContainerFileCarts();
 const productsApi = new ContainerProducts();
 
 /* -------------------------------- Rutas -------------------------------- */
@@ -59,15 +60,16 @@ routerCart.post("/:id/productos", (req, res) => {
     if (!id) {
       res.status(400).json({ msg: "Debe ingresar un id del producto" });
     } else {
-      const product = productsApi.list(id);
-
+      const product = productsApi.list(id).data;
       let cart = cartApi.list(1);
 
       cart = {
-        ...cart,
-        products: [product],
+        id: 1,
+        timestamp: cart.timestamp,
+        products: [...cart.products,product],
       };
-      const response = cartApi.save(cart);
+
+      const response = cartApi.save(cart, 1);
       res.status(200).json(response);
     }
   } catch (error) {
@@ -79,6 +81,26 @@ routerCart.post("/:id/productos", (req, res) => {
   //res.redirect("/");
 });
 
+//Eliminar un producto del carrito por su id de carrito y de producto
+routerCart.delete("/:idCart/productos/:idProd", (req, res) => {
+  try {
+    const { idCart, idProd } = req.params;
+
+    if (!idCart || !idProd) {
+      res
+        .status(400)
+        .json({ msg: "Debe ingresar un id del carrito y un id del producto" });
+    } else {
+      const response = cartApi.delete(idCart, idProd);
+      res.status(200).json(response);
+    }
+  } catch (error) {
+    res
+      .status(404)
+      .json({ msg: `Error al eliminar un producto del carrito: ${error}` });
+  }
+});
+
 //vacia un carrito y lo eliminar
 routerCart.delete("/:id", (req, res) => {
   try {
@@ -86,30 +108,11 @@ routerCart.delete("/:id", (req, res) => {
     if (!id) {
       res.status(400).json({ msg: "Debe ingresar un id del carrito" });
     } else {
-      const response = cartApi.delete(id);
+      const response = cartApi.deleteCart(id);
       res.status(200).json(response);
     }
   } catch (error) {
     res.status(404).json({ msg: `Error al eliminar un carrito: ${error}` });
-  }
-});
-
-//Eliminar un producto del carrito por su id de carrito y de producto
-routerCart.delete("/:id/productos/:idProducto", (req, res) => {
-  try {
-    const { id, idProducto } = req.params;
-    if (!id || !idProducto) {
-      res
-        .status(400)
-        .json({ msg: "Debe ingresar un id del carrito y un id del producto" });
-    } else {
-      const response = cartApi.delete(id);
-      res.status(200).json(response);
-    }
-  } catch (error) {
-    res
-      .status(404)
-      .json({ msg: `Error al eliminar un producto del carrito: ${error}` });
   }
 });
 
