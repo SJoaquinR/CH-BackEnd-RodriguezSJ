@@ -1,13 +1,11 @@
 /* -------------------------------- Modulos -------------------------------- */
 const express = require("express");
 const routerProducts = express.Router();
-
-//const ContainerProducts = require("../containers/products.js");
+ 
 const ContainerFileProducts = require("../containers/fileProducts.js");
 const ContainerAdmin = require("../containers/security.js");
 
 /* -------------------------------- Instancia de Express ------------------------ */
-//const productsApi = new ContainerProducts();
 const fileProductsApi = new ContainerFileProducts();
 const roleAdminApi = new ContainerAdmin();
 /* -------------------------------- Rutas -------------------------------- */
