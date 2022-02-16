@@ -1,0 +1,22 @@
+[
+  {
+    "timestamp": 1645033625229,
+    "name": "nombreProducto",
+    "description": "alguna descripsion",
+    "code": "100214571",
+    "thumbnail": "img",
+    "price": "100",
+    "stock": "2",
+    "id": 1
+  },
+  {
+    "timestamp": 1645040299948,
+    "name": "nombreProducto",
+    "description": "alguna descripsion",
+    "code": "100214571",
+    "thumbnail": "img",
+    "price": "100",
+    "stock": "2",
+    "id": 2
+  }
+]
