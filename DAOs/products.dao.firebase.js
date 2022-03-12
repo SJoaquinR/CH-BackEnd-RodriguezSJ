@@ -1,6 +1,6 @@
-const ContainerMongoDB = require("../containers/mongoProducts.js");
+const ContainerFirebase = require("../containers/firebaseProducts.js");
 
-class ProductsDAO extends ContainerMongoDB {
+class ProductsDAOFirebase extends ContainerFirebase {
   constructor() {
     super("productos", {
       timestamp: {
@@ -37,9 +37,24 @@ class ProductsDAO extends ContainerMongoDB {
   }
 }
 
-module.exports = ProductsDAO;
+module.exports = ProductsDAOFirebase;
 /*
     Testing
 */
-// const objPrd = new ProductsDAO();
-// console.log(await objPrd.listAll());
+
+
+// async function start() {
+//   try {
+//     const listaUsuarios = [
+//       {timestamp: Date.now(), name: 'nombreProducto1', description: 'descripcionProducto1', code: 'codigoProducto1', thumbnail: 'thumbnailProducto1', price: 2123, stock: 10},
+//   ]
+
+//     const objPrd = new ProductsDAOFirebase();
+//     //console.log(await objPrd.listAll());
+//     console.log(await objPrd.save(listaUsuarios));
+//   } catch (error) {}
+// }
+// start();
+
+
+

@@ -1,23 +1,29 @@
-const mongoose = require("mongoose");
+const admin = require("firebase-admin");
 const config = require("../utils/config.js");
-
-const URL = config.mongodb.url;
+const URL = config.firebase.rutaCert;
 
 async function start() {
-  await mongoose.connect(URL);
+  try {
+    admin.initializeApp({
+      credential: admin.credential.cert(URL),
+    });
+  } catch (error) {
+  } finally {
+    console.log("base Firebase conectada!");
+  }
 }
 start();
-//await mongoose.connect(URL);
 
-class ContenedorMongoDB {
+class ContenedorFirebase {
+  db = admin.firestore();
+
   constructor(nombreColeccion, esquema) {
-    this.coleccion = mongoose.model(nombreColeccion, esquema);
+    this.coleccion = db.collection(nombreColeccion, esquema);
   }
 
   async list(id) {
     try {
-      const products = await this.listAll();
-      const product = products.find((product) => product.id == id);
+      const product = this.coleccion.doc(`${id}`);
 
       return (
         { msg: `Listado del producto con id: ${id}`, data: product } || {
@@ -31,8 +37,15 @@ class ContenedorMongoDB {
 
   async listAll() {
     try {
-      const docs = await this.coleccion.find({});
-      return docs;
+      const snapshot = await this.coleccion.get();
+      let docs = snapshot.docs;
+
+      const response = docs.map((doc) => ({
+        id: doc.id,
+        name: doc.data().name,
+        description: doc.data().description,
+      }));
+      console.log(response);
     } catch (error) {
       //this.console.log(error);
       return {
@@ -44,17 +57,11 @@ class ContenedorMongoDB {
 
   async save(product) {
     try {
-      let idProduct = 0;
-      const products = await this.listAll();
-
-      if (products.length !== 0) {
-        idProduct = products.length + 1;
-      } else {
-        idProduct = 1;
-      }
-
-      const newProduct = { ...product, id: idProduct };
-      const doc = await this.coleccion.create(newProduct);
+      console.log("save");
+      // let doc = usuarios.doc(`${id}`); // id manual
+      let doc = this.coleccion.doc(); //id automatico
+      let docInsert = await doc.create(product);
+      console.log(docInsert);
 
       return { msg: "Producto Agregado", data: doc };
     } catch (error) {
@@ -65,14 +72,12 @@ class ContenedorMongoDB {
   async update(product, id) {
     try {
       const products = await this.listAll();
-      const index = products.findIndex((p) => p.id == id);
+      const doc = this.coleccion.doc(`${id}`);
 
-      if (index !== -1) {
-        products[index] = product;
+      if (doc !== -1) {
+        const item = await doc.update(product);
 
-        let doc = await this.coleccion.updateOne({ id: id }, product);
-
-        return { msg: "Producto actualizado", data: doc };
+        return { msg: "Producto actualizado", data: item };
       } else {
         return { error: `Producto no encontrado para actualizar` };
       }
@@ -83,16 +88,13 @@ class ContenedorMongoDB {
 
   async delete(id) {
     try {
-      const products = await this.listAll();
-      const index = products.findIndex((p) => p.id == id);
+      const products = this.coleccion.doc(`${id}`);
 
-      if (index !== -1) {
-        products.splice(index, 1);
-
-        let doc = await this.coleccion.deleteOne({ id: id });
+      if (products !== -1) {
+        const item = await products.delete();
 
         //fs.writeFileSync(this.filePath, JSON.stringify(products, null, 2));
-        return { msg: "Producto eliminado", data: products };
+        return { msg: "Producto eliminado", data: item };
       } else {
         return { error: `Producto no encontrado para eliminar` };
       }
@@ -102,4 +104,4 @@ class ContenedorMongoDB {
   }
 }
 
-module.exports = ContenedorMongoDB;
+module.exports = ContenedorFirebase;
