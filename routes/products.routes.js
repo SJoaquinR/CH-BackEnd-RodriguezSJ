@@ -1,12 +1,14 @@
 /* -------------------------------- Modulos -------------------------------- */
 const express = require("express");
 const routerProducts = express.Router();
- 
-const ContainerFileProducts = require("../containers/fileProducts.js");
+
+//import ProductsDAO from "../DAOs/products.dao.js";
+//const ContainerFileProducts = require("../containers/fileProducts.js");
+const ProductsDAO = require("../DAOs/products.dao.js");
 const ContainerAdmin = require("../containers/security.js");
 
 /* -------------------------------- Instancia de Express ------------------------ */
-const fileProductsApi = new ContainerFileProducts();
+const fileProductsApi = new ProductsDAO();
 const roleAdminApi = new ContainerAdmin();
 /* -------------------------------- Rutas -------------------------------- */
 // https://www.iconfinder.com/free_icons
@@ -22,15 +24,15 @@ El timestamp puede implementarse con Date.now()
 // });
 
 //devuelve un producto según su id
-routerProducts.get("/:id?", (req, res) => {
+routerProducts.get("/:id?", async (req, res) => {
   try {
     const { id } = req.params;
 
     if (id) {
-      const product = fileProductsApi.list(id);
+      const product = await fileProductsApi.list(id);
       res.status(200).json(product);
     } else {
-      const products = fileProductsApi.listAll();
+      const products = await fileProductsApi.listAll();
       res.status(200).json(products);
     }
   } catch (error) {
@@ -39,7 +41,7 @@ routerProducts.get("/:id?", (req, res) => {
 });
 
 //agrega un producto y usamos middlewares
-routerProducts.post("/", (req, res) => {
+routerProducts.post("/", async (req, res) => {
   try {
     if (!roleAdminApi.roleAdmin()) {
       res.status(401).json(roleAdminApi.notAutorized("POST", "/products"));
@@ -56,7 +58,7 @@ routerProducts.post("/", (req, res) => {
         stock: stock,
       };
 
-      const response = fileProductsApi.save(producto);
+      const response = await fileProductsApi.save(producto);
       res.status(200).json(response);
     }
   } catch (error) {
@@ -67,7 +69,7 @@ routerProducts.post("/", (req, res) => {
 });
 
 //recibe y actualiza un producto según su id
-routerProducts.put("/:id", (req, res) => {
+routerProducts.put("/:id", async (req, res) => {
   try {
     if (!roleAdminApi.roleAdmin()) {
       res.status(401).json(roleAdminApi.notAutorized("PUT", "/products"));
@@ -85,7 +87,7 @@ routerProducts.put("/:id", (req, res) => {
         stock: stock,
       };
 
-      const response = fileProductsApi.update(producto, id);
+      const response = await fileProductsApi.update(producto, id);
       res.status(200).json(response);
     }
   } catch (error) {
@@ -94,14 +96,14 @@ routerProducts.put("/:id", (req, res) => {
 });
 
 //elimina un producto según su id
-routerProducts.delete("/:id", (req, res) => {
+routerProducts.delete("/:id", async (req, res) => {
   try {
     if (!roleAdminApi.roleAdmin()) {
       res.status(401).json(roleAdminApi.notAutorized("DELETE", "/products"));
     } else {
       const { id } = req.params;
 
-      const response = fileProductsApi.delete(id);
+      const response = await fileProductsApi.delete(id);
       res.status(200).json(response);
     }
   } catch (error) {
