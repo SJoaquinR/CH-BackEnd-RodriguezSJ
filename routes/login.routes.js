@@ -7,7 +7,7 @@ const routerLogin = express.Router();
 const usersDAO = require("../DAOs/users.dao.js");
 
 /* -------------------------------- Instancia de Express ------------------------ */
-//const mongoUsersApi = new usersDAO();
+const mongoUsersApi = new usersDAO();
 /* -------------------------------- Rutas -------------------------------- */
 // https://www.iconfinder.com/free_icons
 
