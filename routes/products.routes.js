@@ -111,4 +111,10 @@ routerProducts.delete("/:id", async (req, res) => {
   }
 });
 
+routerProducts.get('*', (req, res) => {
+  let { url, method } = req
+  logger.warn('Ruta %s %s no implementada', url, method)
+  res.send(`Ruta ${method} ${url} no está implementada`)
+})
+
 module.exports = routerProducts;

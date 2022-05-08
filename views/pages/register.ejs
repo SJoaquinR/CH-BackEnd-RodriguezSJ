@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include('../partials/head.ejs') %>
+  </head>
+  <body>
+    <div class="container mt-3">
+      <div class="jumbotron">
+        <h1>Registrarse</h1>
+        <br>
+        <form class="form" action="/register" method="post" role="form" autocomplete="off">
+    
+          <div class="form-group">
+            <input id="name" name='name' placeholder="Nombre" class="form-control" type="text" required>
+          </div>
+
+          <div class="form-group mt-3">
+            <input id="address" name='address' placeholder="Direccion" class="form-control" type="text" required>
+          </div>
+
+          <div class="form-group mt-3">
+            <input id="email" name='email' placeholder="E-Mail" class="form-control" type="text" required>
+          </div>
+
+          <div class="form-group mt-3">
+            <input id="password" name='password' placeholder="password" class="form-control" type="password" required>
+          </div>
+
+          <div class="form-group mt-3">
+            <input id="age" name='age' placeholder="Años" class="form-control" type="number" required>
+          </div>
+
+          <div class="form-group mt-3">
+            <input id="phone" name='phone' placeholder="Telefono" class="form-control" type="number" required>
+          </div>
+
+          <div class="form-group mt-3">
+            <input id="thumbnail" name='thumbnail' placeholder="Foto" class="form-control" type="text" required>
+          </div>
+
+          <div class="form-group">
+            <input class="btn btn-success my-3" type="submit" value="Registrarse">
+          </div>
+        </form>
+    
+        <hr>
+    
+        <div class="text-left">
+          <button class="btn btn-success" onclick="location.href = '/login'">Ir a Login</button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

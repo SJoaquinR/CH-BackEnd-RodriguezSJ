@@ -7,14 +7,20 @@ const exphbs = require("express-handlebars");
 //const routerProducts = express.Router();
 const routerProducts = require("./routes/products.routes");
 const routerCart = require("./routes/cart.routes");
+const routerRegister = require("./routes/Register.routes");
+const routerLogin = require("./routes/login.routes");
+
 /* -------------------------------- Instancia de Express ------------------------ */
 const app = express();
 
 /* -------------------------------- Middlewares -------------------------------- */
-//app.use(express.static("public"));
+app.use(express.static("public"));
 
 routerProducts.use(express.json());
 routerCart.use(express.json());
+routerRegister.use(express.json());
+routerLogin.use(express.json());
+
 app.use(bodyParser.urlencoded({ extended: true }));
 
 /* -------------------------------- Motor de plantillas -------------------------------- */
@@ -43,7 +49,10 @@ server.on("error", (err) => {
 /* Agregamos routers a la app */
 app.use("/api/productos", routerProducts);
 app.use("/api/carrito", routerCart);
+app.use("/register", routerRegister);
+app.use("/login", routerLogin);
 
-app.get("/", (req, res) => {
-  res.render('pages/index');
-});
+//Ruta inicio
+// app.get("/", (req, res) => {
+//   res.render('pages/login');
+// });
