@@ -8,7 +8,7 @@
       <div class="jumbotron">
         <h1>Registrarse</h1>
         <br>
-        <form class="form" action="/register" method="post" role="form" autocomplete="off">
+        <form class="form" action="/register" method="post" role="form" autocomplete="off" enctype="multipart/form-data">
     
           <div class="form-group">
             <input id="name" name='name' placeholder="Nombre" class="form-control" type="text" required>
@@ -35,7 +35,10 @@
           </div>
 
           <div class="form-group mt-3">
-            <input id="thumbnail" name='thumbnail' placeholder="Foto" class="form-control" type="text" required>
+            <div class="input-group">
+              <span class="input-group-text" id="basic-addon1">Imagen o Avatar</span>
+              <input id="thumbnail" name='thumbnail' class="form-control" type="file" required>
+            </div>
           </div>
 
           <div class="form-group">

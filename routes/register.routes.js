@@ -2,11 +2,27 @@
 const express = require("express");
 const logger = require('../containers/logger.js');
 const routerRegister = express.Router();
+const path = require("path");
+const multert = require("multer");
 
-const usersDAO = require("../DAOs/users.dao.js");
+//const usersDAO = require("../DAOs/users.dao.js");
+const mongoUsersApi = require("../apis/usersApi.js");
+
+/* -------------------------------- Middlewares -------------------------------- */
+//Subir la ruta y el nombre del archivo
+const storage = multert.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads");
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()} - ${file.originalname}`);
+  },
+});
+//para ser uso de mi archivo
+const upload = multert({ storage: storage });
 
 /* -------------------------------- Instancia de Express ------------------------ */
-const mongoUsersApi = new usersDAO();
+//const mongoUsersApi = new usersDAO();
 /* -------------------------------- Rutas -------------------------------- */
 // https://www.iconfinder.com/free_icons
 
@@ -29,14 +45,23 @@ routerRegister.get("/user/:id?", async (req, res) => {
         res.status(200).json(usuarios);
       }
     } catch (error) {
+      logger.warn('Error al obtener Usuario: %s', error);
       res.status(404).json({ msg: `Error al obtener Usuario: ${error}` });
     }
   });
 
 //Agrega un usuario
-routerRegister.post("/", async (req, res) => {
+routerRegister.post("/", upload.single("thumbnail"), async (req, res, next) => {
   try {
-    const { name, address, email, password, age, phone, thumbnail} = req.body;
+    const file = req.file;
+    if (!file) {
+      const error = new Error("Archivo no encontrado");
+      logger.warn(`Archivo no encontrado ${error}`);
+      error.httpStatusCode = 400;
+      return next(error);
+    }
+
+    const { name, address, email, password, age, phone} = req.body;
 
     let usuario = {
       timestamp: Date.now(),
@@ -46,7 +71,7 @@ routerRegister.post("/", async (req, res) => {
       password: password,
       age: age,
       phone: phone,
-      thumbnail: thumbnail,
+      thumbnail: path.join(__dirname, "../uploads", file.filename),
     };
 
     const response = await mongoUsersApi.save(usuario);
@@ -54,6 +79,7 @@ routerRegister.post("/", async (req, res) => {
     res.redirect("/login");
   } catch (error) {
     //res.status(404).json({ msg: `Error al agregar Usuario: ${error}` });
+    logger.warn(`Error al agregar usuario ${error}`);
     res.render("pages/register-err");
   }
 });
@@ -78,6 +104,7 @@ routerRegister.put("/:id", async (req, res) => {
     const response = await mongoUsersApi.update(Usuario, id);
     res.status(200).json(response);
   } catch (error) {
+    logger.warn('Error al obtener Usuario: %s', error)
     res.status(404).json({ msg: `Error al actualizar Usuario: ${error}` });
   }
 });
@@ -90,6 +117,7 @@ routerRegister.delete("/:id", async (req, res) => {
       const response = await mongoUsersApi.delete(id);
       res.status(200).json(response);
   } catch (error) {
+    logger.warn('Error al obtener Usuario: %s', error)
     res.status(404).json({ msg: `Error al eliminar Usuario: ${error}` });
   }
 });

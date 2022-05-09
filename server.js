@@ -1,8 +1,11 @@
 /* -------------------------------- Modulos -------------------------------- */
 const express = require("express");
+const cluster = require('cluster');
+const numCPUs = require('os').cpus().length;
 const bodyParser = require("body-parser");
 const path = require("path");
 const exphbs = require("express-handlebars");
+const logger = require('./containers/logger.js');
 
 //const routerProducts = express.Router();
 const routerProducts = require("./routes/products.routes");
@@ -36,14 +39,32 @@ app.engine('hbs', exphbs.engine({
 app.set('view engine', 'ejs');
 
 /* -------------------------------- Server -------------------------------- */
-const PORT = 8080;
-const server = app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+const MODO_CLUSTER = process.argv[2] == 'CLUSTER'
 
-server.on("error", (err) => {
-  console.log(`Error en el servidor: ${err}`);
-});
+if (MODO_CLUSTER && cluster.isMaster) {
+  logger.info(`num cpus: ${numCPUs}`);
+
+  for (let index = 0; index < numCPUs; index++) {
+      cluster.fork();
+  }
+
+  cluster.on('exit', worker=>{
+      logger.info(`Worker ${process.pid} finalizo ${new Date().toLocaleString()}`);
+      cluster.fork()
+  });
+} else {
+  // console.log('Proceso hijo')
+  //const PORT = parseInt(process.argv[2]) || 8080;
+  const PORT = 8080;
+
+  const server = app.listen(PORT, () => {
+    logger.info(`Server is running on port ${PORT} - PID WORKER ${process.pid}`);
+  });
+
+  server.on("error", (err) => {
+    logger.warn(`Error en el servidor: ${err}`);
+  });
+}
 
 /* -------------------------------- Rutas -------------------------------- */
 /* Agregamos routers a la app */
@@ -56,3 +77,15 @@ app.use("/login", routerLogin);
 // app.get("/", (req, res) => {
 //   res.render('pages/login');
 // });
+
+/* -------------------------- FORK ---------------------------- */
+//node server.js FORK
+//npm start FORK
+//artillery quick -c 50 -n 50 "http://localhost:8080/api/productos" > artillery_fork.txt
+/* ----------------------------------------------------------- */
+
+/* -------------------------- CLUSTER ---------------------------- */
+//node server.js CLUSTER
+//npm start CLUSTER
+//artillery quick -c 50 -n 50 "http://localhost:8080/api/productos" > artillery_cluster.txt
+/* ----------------------------------------------------------- */

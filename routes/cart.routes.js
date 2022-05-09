@@ -1,10 +1,12 @@
 /* -------------------------------- Modulos -------------------------------- */
 const express = require("express");
+const logger = require("../containers/logger.js");
 const routerCart = express.Router();
 
 const ContainerFileCarts = require("../containers/fileCart.js");
 const ContainerFileProducts = require("../containers/fileProducts.js");
 
+const globalUserApi = require("../apis/globalUserApi.js");
 /* -------------------------------- Instancia de Express ------------------------ */
 const cartApi = new ContainerFileCarts();
 const productsApi = new ContainerFileProducts();
@@ -16,17 +18,32 @@ const productsApi = new ContainerFileProducts();
 id, timestamp(carrito), productos: { id, timestamp(producto), nombre, descripcion, código, foto (url), precio, stock }
 */
 
+// routerCart.get("/", (req, res) => {
+
+//   const datosUsuario = {
+//     name: globalUserApi.get(),
+//   };
+
+//   res.render('partials/bodyCart', {datos: datosUsuario,});
+// });
+
 //Me permite listar todos los productos guardados en el carrito
 routerCart.get("/:id/productos", (req, res) => {
   try {
+    const datosUsuario = {
+      name: globalUserApi.get(),
+    };
+
     const { id } = req.params;
 
     if (id) {
       const cart = cartApi.list(id);
-      res.status(200).json(cart);
+      //res.status(200).json(cart);
+      res.render("partials/bodyCart", { datos: datosUsuario, carts: cart });
     } else {
-      const carts = cartApi.listAll();
-      res.status(200).json(carts);
+      const cart = cartApi.listAll();
+      //res.status(200).json(carts);
+      res.render("partials/bodyCart", { datos: datosUsuario, carts: cart });
     }
   } catch (error) {
     res.status(404).json({ msg: `Error al obtener Productos: ${error}` });
@@ -117,10 +134,10 @@ routerCart.delete("/:id", (req, res) => {
   }
 });
 
-routerCart.get('*', (req, res) => {
-  let { url, method } = req
-  logger.warn('Ruta %s %s no implementada', url, method)
-  res.send(`Ruta ${method} ${url} no está implementada`)
-})
+// routerCart.get("*", (req, res) => {
+//   let { url, method } = req;
+//   logger.warn("Ruta %s %s no implementada", url, method);
+//   res.send(`Ruta ${method} ${url} no está implementada`);
+// });
 
 module.exports = routerCart;

@@ -1,13 +1,12 @@
-<h1>Productos disponibles</h1>
+<h1>Productos en el carrito</h1>
 <br />
 <div class="card-group">
-  <% products.forEach(function(product) { %>
+  <% carts.products.forEach(function(product) { %>
   <div class="card">
     <img
       src="<%= product.thumbnail %>"
       class="card-img-top w-50"
       alt="<%= product.name %>"
-
     />
     <div class="card-body">
       <h5 class="card-title"><%= product.name %></h5>

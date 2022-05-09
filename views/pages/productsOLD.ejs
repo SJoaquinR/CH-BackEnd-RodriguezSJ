@@ -1,0 +1,33 @@
+<h1>Lista de Productos</h1>
+<% if (products.length > 0) { %>
+<table class="table table-striped">
+  <tr>
+    <th>Titulo</th>
+    <th>Precio</th>
+    <th>Imagen</th>
+  </tr>
+
+  <% products.forEach(function(product) { %>
+  <tr>
+    <td><%= product.title %></td>
+    <td><%= product.price %></td>
+    <td style="width: 25%">
+      <img src="<%= product.image %>" style="width:8%;" alt="Imagen" />
+    </td>
+  </tr>
+  <% }) %>
+</table>
+<% } else { %>
+<h4
+  style="
+    color: red;
+    background-color: yellow;
+    position: relative;
+    width: 25%;
+    height: 50px;
+  "
+>
+  No hay productos para mostrar
+</h4>
+<% } %>
+<a href="/" type="button" class="btn btn-primary mt-3 mx-3">ir al formulario</a>

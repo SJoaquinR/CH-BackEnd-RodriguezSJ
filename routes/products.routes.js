@@ -7,6 +7,8 @@ const routerProducts = express.Router();
 const ProductsDAO = require("../DAOs/products.dao.js");
 const ContainerAdmin = require("../containers/security.js");
 
+const globalUserApi = require("../apis/globalUserApi.js");
+
 /* -------------------------------- Instancia de Express ------------------------ */
 const fileProductsApi = new ProductsDAO();
 const roleAdminApi = new ContainerAdmin();
@@ -26,14 +28,20 @@ El timestamp puede implementarse con Date.now()
 //devuelve un producto según su id
 routerProducts.get("/:id?", async (req, res) => {
   try {
+    const datosUsuario = {
+      name: globalUserApi.get(),
+    };
+
     const { id } = req.params;
 
     if (id) {
       const product = await fileProductsApi.list(id);
-      res.status(200).json(product);
+      //res.status(200).json(product);
+      res.render("partials/bodyProducts", { datos: datosUsuario, products: product });
     } else {
-      const products = await fileProductsApi.listAll();
-      res.status(200).json(products);
+      const product = await fileProductsApi.listAll();
+      //res.status(200).json(products);
+      res.render("partials/bodyProducts", { datos: datosUsuario, products: product });
     }
   } catch (error) {
     res.status(404).json({ msg: `Error al obtener Productos: ${error}` });

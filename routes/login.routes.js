@@ -2,12 +2,21 @@
 const express = require("express");
 const session = require("express-session");
 const logger = require('../containers/logger.js');
+const globalUserApi = require('../apis/globalUserApi.js');
+
 const routerLogin = express.Router();
 
-const usersDAO = require("../DAOs/users.dao.js");
+//const usersDAO = require("../DAOs/users.dao.js");
+const mongoUsersApi = require("../apis/usersApi.js");
 
 /* -------------------------------- Instancia de Express ------------------------ */
-const mongoUsersApi = new usersDAO();
+//const mongoUsersApi = new usersDAO();
+routerLogin.use(session({
+  secret: '123456789!@#$%^&*()',
+  resave: false,
+  saveUninitialized: false
+}));
+
 /* -------------------------------- Rutas -------------------------------- */
 // https://www.iconfinder.com/free_icons
 
@@ -20,20 +29,29 @@ routerLogin.get("/", (req, res) => {
 //Login Usuarios
 routerLogin.post("/", async (req, res) => {
   try {
-    const { nameUser, password } = req.body;
+    const { email, password } = req.body;
 
-    if (nameUser && password) {
-      const usuario = await mongoUsersApi.listUser(nameUser, password);
-      
-      req.session.nameUser = nameUser;
+    if (email && password) {
+      const usuario = await mongoUsersApi.login(email, password);
+      const nameUser = globalUserApi.save(usuario.data.name);
+
+      req.session.email = email;
       req.session.password = password;
+
+      const datosUsuario = {
+        name: nameUser,
+        email: email,
+      };
+      
       //res.status(200).json(usuario);
-      res.redirect("/index");
+      res.render("partials/bodyNavbar", {datos: datosUsuario,});
     } else {
       //res.status(401).json({ msg: `Usuario inexistente` });
+      logger.info('Usuario o contraseña invalida');
       res.render("pages/login-error");
     }
   } catch (error) {
+    logger.warn(`Error al logear Usuario ${error}`)
     res.status(404).json({ msg: `Error al obtener Usuario: ${error}` });
   }
 });
@@ -41,22 +59,16 @@ routerLogin.post("/", async (req, res) => {
   
   //LogOut Usuario
 routerLogin.get("/logout", (req, res) => {
-  logger.info('Ruta logout GET');
-  const nameUser = req.session?.nameUser;
-  if (nameUser) {
-    req.session.destroy((err) => {
-      // if (!err) {
-      //   res.render(path.join(process.cwd(), "/page/pages/chau.ejs"), {
-      //     nameUser,
-      //   });
-      // } else {
-        res.redirect("/");
-      //}
+   const email = req.session?.email;
+
+   if (email) {
+    req.session.destroy(err=>{
+      if (err) {
+          res.json({err});
+      } 
     });
-  } else {
-    req.logout();
-    res.redirect("/");
   }
+  res.redirect("/");
 });
   //FIN LogOut Usuario
 

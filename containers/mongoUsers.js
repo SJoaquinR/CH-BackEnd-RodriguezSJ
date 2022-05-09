@@ -42,15 +42,13 @@ class ContenedorUsersMongoDB {
     }
   }
 
-  async listUser(nameUser, password) {
+  async login(email, password) {
     try {
       const items = await this.listAll();
-      const item = items.find((item) => item.name == nameUser && item.password == password);
+      const item = items.find((item) => item.email == email && item.password == password);
 
       return (
-        { msg: `Usuario: ${id}`, data: item } || {
-          error: `Usuario no encontrado`,
-        }
+        { msg: `Usuario: ${email}`, data: item }
       );
     } catch (error) {
       return { error: `Usuario no encontrado` };
