@@ -36,7 +36,6 @@ routerLogin.post("/", async (req, res) => {
       const nameUser = globalUserApi.save(usuario.data.name);
 
       req.session.email = email;
-      req.session.password = password;
 
       const datosUsuario = {
         name: nameUser,

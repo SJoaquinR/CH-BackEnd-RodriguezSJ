@@ -1,6 +1,7 @@
 /* -------------------------------- Modulos -------------------------------- */
 const express = require("express");
 const logger = require('../containers/logger.js');
+const ContainerSendMail = require('../containers/sendMail.js');
 const routerRegister = express.Router();
 const path = require("path");
 const multert = require("multer");
@@ -23,6 +24,7 @@ const upload = multert({ storage: storage });
 
 /* -------------------------------- Instancia de Express ------------------------ */
 //const mongoUsersApi = new usersDAO();
+const sendMail = new ContainerSendMail();
 /* -------------------------------- Rutas -------------------------------- */
 // https://www.iconfinder.com/free_icons
 
@@ -75,6 +77,7 @@ routerRegister.post("/", upload.single("thumbnail"), async (req, res, next) => {
     };
 
     const response = await mongoUsersApi.save(usuario);
+    sendMail.enviarCorreo(`EMAIL: ${usuario.email} \n NOMBRE: ${usuario.name}`);
     //res.status(200).json(response);
     res.redirect("/login");
   } catch (error) {
