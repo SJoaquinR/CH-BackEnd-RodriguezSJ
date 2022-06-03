@@ -3,7 +3,7 @@ const config = {
         url: 'mongodb://localhost:27017/ecommerce'
     },
     firebase: {
-        rutaCert: '../db/./certificado.json',
+        rutaCert: '../../db/./certificado.json',
     }
 }
 

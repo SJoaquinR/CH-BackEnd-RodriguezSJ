@@ -1,4 +1,4 @@
-const usersDAO = require("../DAOs/users.dao.js");
+const usersDAO = require("../services/users.dao.js");
 const mongoUsersApi = new usersDAO();
 
 module.exports = mongoUsersApi;

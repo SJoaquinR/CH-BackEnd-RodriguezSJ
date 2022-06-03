@@ -1,13 +1,14 @@
 /* -------------------------------- Modulos -------------------------------- */
 const express = require("express");
-const logger = require('../containers/logger.js');
-const ContainerSendMail = require('../containers/sendMail.js');
+const logger = require("../containers/logger.js");
+//const ContainerSendMail = require("../containers/sendMail.js");
 const routerRegister = express.Router();
-const path = require("path");
+//const path = require("path");
 const multert = require("multer");
 
 //const usersDAO = require("../DAOs/users.dao.js");
-const mongoUsersApi = require("../apis/usersApi.js");
+//const mongoUsersApi = require("../apis/usersApi.js");
+const { getUser, addUser, updateUser, deleteUser } = require("../controllers/register.controller.js");
 
 /* -------------------------------- Middlewares -------------------------------- */
 //Subir la ruta y el nombre del archivo
@@ -24,10 +25,9 @@ const upload = multert({ storage: storage });
 
 /* -------------------------------- Instancia de Express ------------------------ */
 //const mongoUsersApi = new usersDAO();
-const sendMail = new ContainerSendMail();
+//const sendMail = new ContainerSendMail();
 /* -------------------------------- Rutas -------------------------------- */
 // https://www.iconfinder.com/free_icons
-
 
 routerRegister.get("/", (req, res) => {
   res.render("pages/register");
@@ -35,22 +35,18 @@ routerRegister.get("/", (req, res) => {
 
 //obtener usuario
 routerRegister.get("/user/:id?", async (req, res) => {
-    //res.render("pages/register");
-    try {
-      const { id } = req.params;
-  
-      if (id) {
-        const usuario = await mongoUsersApi.list(id);
-        res.status(200).json(usuario);
-      } else {
-        const usuarios = await mongoUsersApi.listAll();
-        res.status(200).json(usuarios);
-      }
-    } catch (error) {
-      logger.warn('Error al obtener Usuario: %s', error);
-      res.status(404).json({ msg: `Error al obtener Usuario: ${error}` });
-    }
-  });
+  //res.render("pages/register");
+  const { id } = req.params;
+  const usuario = await getUser(id);
+
+  if ([usuario.error != ""]) {
+    res.status(200).json(usuario);
+  } else {
+    res
+      .status(404)
+      .json({ [usuario.msg]: `Error al obtener Usuario: ${[usuario.error]}` });
+  }
+});
 
 //Agrega un usuario
 routerRegister.post("/", upload.single("thumbnail"), async (req, res, next) => {
@@ -63,23 +59,12 @@ routerRegister.post("/", upload.single("thumbnail"), async (req, res, next) => {
       return next(error);
     }
 
-    const { name, address, email, password, age, phone} = req.body;
-
-    let usuario = {
-      timestamp: Date.now(),
-      name: name,
-      address: address,
-      email: email,
-      password: password,
-      age: age,
-      phone: phone,
-      thumbnail: path.join(__dirname, "../uploads", file.filename),
-    };
-
-    const response = await mongoUsersApi.save(usuario);
-    sendMail.enviarCorreo(`EMAIL: ${usuario.email} \n NOMBRE: ${usuario.name}`);
-    //res.status(200).json(response);
-    res.redirect("/login");
+    const response = await addUser(req.body, file);
+    if (response) {
+      res.redirect("/login");
+    }else{
+      res.render("pages/register-err");
+    }
   } catch (error) {
     //res.status(404).json({ msg: `Error al agregar Usuario: ${error}` });
     logger.warn(`Error al agregar usuario ${error}`);
@@ -91,23 +76,11 @@ routerRegister.post("/", upload.single("thumbnail"), async (req, res, next) => {
 routerRegister.put("/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, address, email, password, age, phone, thumbnail} = req.body;
+    const response = await updateUser(req.body, id);
 
-    let Usuario = {
-      timestamp: Date.now(),
-      name: name,
-      address: address,
-      email: email,
-      password: password,
-      age: age,
-      phone: phone,
-      thumbnail: thumbnail,
-    };
-
-    const response = await mongoUsersApi.update(Usuario, id);
     res.status(200).json(response);
   } catch (error) {
-    logger.warn('Error al obtener Usuario: %s', error)
+    logger.warn("Error al obtener Usuario: %s", error);
     res.status(404).json({ msg: `Error al actualizar Usuario: ${error}` });
   }
 });
@@ -115,20 +88,20 @@ routerRegister.put("/:id", async (req, res) => {
 //elimina un usuario según su id
 routerRegister.delete("/:id", async (req, res) => {
   try {
-      const { id } = req.params;
+    const { id } = req.params;
 
-      const response = await mongoUsersApi.delete(id);
-      res.status(200).json(response);
+    const response = await deleteUser(id);
+    res.status(200).json(response);
   } catch (error) {
-    logger.warn('Error al obtener Usuario: %s', error)
+    logger.warn("Error al obtener Usuario: %s", error);
     res.status(404).json({ msg: `Error al eliminar Usuario: ${error}` });
   }
 });
 
-routerRegister.get('*', (req, res) => {
-  let { url, method } = req
-  logger.warn('Ruta %s %s no implementada', url, method)
-  res.send(`Ruta ${method} ${url} no está implementada`)
-})
+routerRegister.get("*", (req, res) => {
+  let { url, method } = req;
+  logger.warn("Ruta %s %s no implementada", url, method);
+  res.send(`Ruta ${method} ${url} no está implementada`);
+});
 
 module.exports = routerRegister;

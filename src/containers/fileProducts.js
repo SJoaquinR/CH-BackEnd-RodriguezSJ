@@ -5,7 +5,7 @@ class ContainerFileProducts {
   listProducts;
 
   constructor() {
-    this.filePath = "./containers/data/products.data.txt";
+    this.filePath = "./src/containers/data/products.data.txt";
   }
 
   list(id) {

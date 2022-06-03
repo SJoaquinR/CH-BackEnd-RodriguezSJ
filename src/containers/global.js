@@ -4,8 +4,8 @@ class ContainerGlobal {
   EMAIL_CONTACT_NUMBER=process.env.EMAIL_CONTACT_NUMBER;
 
   constructor() {}
-  get(){
-    return this.name;
+  async get(){
+    return await this.name;
   }
 
   save(name) {

@@ -5,13 +5,13 @@ const numCPUs = require('os').cpus().length;
 const bodyParser = require("body-parser");
 const path = require("path");
 const exphbs = require("express-handlebars");
-const logger = require('./containers/logger.js');
+const logger = require('./src/containers/logger.js');
 
 //const routerProducts = express.Router();
-const routerProducts = require("./routes/products.routes");
-const routerCart = require("./routes/cart.routes");
-const routerRegister = require("./routes/Register.routes");
-const routerLogin = require("./routes/login.routes");
+const routerProducts = require("./src/routes/products.routes");
+const routerCart = require("./src/routes/cart.routes");
+const routerRegister = require("./src/routes/Register.routes");
+const routerLogin = require("./src/routes/login.routes");
 
 /* -------------------------------- Instancia de Express ------------------------ */
 const app = express();
