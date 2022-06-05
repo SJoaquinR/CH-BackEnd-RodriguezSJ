@@ -5,7 +5,7 @@ const numCPUs = require('os').cpus().length;
 const bodyParser = require("body-parser");
 const path = require("path");
 const exphbs = require("express-handlebars");
-const logger = require('./src/containers/logger.js');
+const logger = require('./src/utils/logger.js');
 
 //const routerProducts = express.Router();
 const routerProducts = require("./src/routes/products.routes");

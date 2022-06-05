@@ -1,17 +1,25 @@
-const mongoose = require("mongoose");
-const config = require("../utils/config.js");
+//const mongoose = require("mongoose");
+//const config = require("../utils/config.js");
+const CustomError = require("../classes/CustomError.class.js");
+const MongoDBClient = require("../classes/MongoDBClient.class.js");
+const logger = require("../utils/logger.js");
 
-const URL = config.mongodb.url;
+const productModel = require("../model/products.model.js");
+const DAO = require("../classes/DAO.class.js");
 
-async function start() {
-  await mongoose.connect(URL);
-}
-start();
+// const URL = config.mongodb.url;
+
+// async function start() {
+//   await mongoose.connect(URL);
+// }
+// start();
 //await mongoose.connect(URL);
 
-class ContenedorMongoDB {
-  constructor(nombreColeccion, esquema) {
-    this.coleccion = mongoose.model(nombreColeccion, esquema);
+class ContenedorMongoDB extends DAO {
+  constructor() {
+    super();
+    this.coleccion = productModel;
+    this.conn = new MongoDBClient();
   }
 
   async list(id) {
@@ -25,20 +33,22 @@ class ContenedorMongoDB {
         }
       );
     } catch (error) {
-      return { error: `Producto no encontrado` };
+      const cuserr = new CustomError(500, "Error en list()", error);
+      return { error: cuserr };
     }
   }
 
   async listAll() {
     try {
+      await this.conn.connect();
       const docs = await this.coleccion.find({});
       return docs;
     } catch (error) {
-      //this.console.log(error);
-      return {
-        code: "001",
-        msg: "Error al consumir ListarAll()",
-      };
+      const cuserr = new CustomError(500, "Error en listAll()", error);
+      return { error: cuserr };
+    } finally {
+      this.conn.disconnect();
+      logger.info(`Elemento listadoAll`);
     }
   }
 
@@ -47,6 +57,7 @@ class ContenedorMongoDB {
       let idProduct = 0;
       const products = await this.listAll();
 
+      await this.conn.connect();
       if (products.length !== 0) {
         idProduct = products.length + 1;
       } else {
@@ -58,7 +69,11 @@ class ContenedorMongoDB {
 
       return { msg: "Producto Agregado", data: doc };
     } catch (error) {
-      return { error: `Producto no encontrado al intentar guardar` };
+      const cuserr = new CustomError(500, "Error en save()", error);
+      return { error: cuserr };
+    } finally {
+      this.conn.disconnect();
+      logger.info(`Elemento guardado ${product}`);
     }
   }
 
@@ -67,6 +82,7 @@ class ContenedorMongoDB {
       const products = await this.listAll();
       const index = products.findIndex((p) => p.id == id);
 
+      await this.conn.connect();
       if (index !== -1) {
         products[index] = product;
 
@@ -77,7 +93,11 @@ class ContenedorMongoDB {
         return { error: `Producto no encontrado para actualizar` };
       }
     } catch (error) {
-      return { error: `Producto no encontrado al intentar actualizar` };
+      const cuserr = new CustomError(500, "Error en update()", error);
+      return { error: cuserr };
+    } finally {
+      this.conn.disconnect();
+      logger.info(`Elemento actualizado ${product}`);
     }
   }
 
@@ -86,6 +106,7 @@ class ContenedorMongoDB {
       const products = await this.listAll();
       const index = products.findIndex((p) => p.id == id);
 
+      await this.conn.connect();
       if (index !== -1) {
         products.splice(index, 1);
 
@@ -97,7 +118,11 @@ class ContenedorMongoDB {
         return { error: `Producto no encontrado para eliminar` };
       }
     } catch (error) {
-      return { error: `Producto no encontrado al intentar eliminar` };
+      const cuserr = new CustomError(500, "Error en delete()", error);
+      return { error: cuserr };
+    } finally {
+      this.conn.disconnect();
+      logger.info(`Elemento eliminado ${id}`);
     }
   }
 }

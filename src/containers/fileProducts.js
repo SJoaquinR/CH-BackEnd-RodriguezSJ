@@ -1,4 +1,5 @@
 const fs = require("fs");
+const CustomError = require("../classes/CustomError.class.js");
 
 class ContainerFileProducts {
   filePath;
@@ -19,7 +20,8 @@ class ContainerFileProducts {
         }
       );
     } catch (error) {
-      return { error: `Producto no encontrado` };
+      const cuserr = new CustomError(500, 'Error en list()', error);
+      return { error: cuserr };
     }
   }
 
@@ -34,7 +36,8 @@ class ContainerFileProducts {
       }
       return this.listProducts;
     } catch (error) {
-        return `Productos no encontrados al intentar listar: ${error}`;
+      const cuserr = new CustomError(500, 'Error en listAll()', error);
+      return { error: cuserr };
     }
   }
 
@@ -55,7 +58,8 @@ class ContainerFileProducts {
       fs.writeFileSync(this.filePath, JSON.stringify(products, null, 2));
       return { msg: "Producto Agregado", data: newProduct };
     } catch (error) {
-      return { error: `Producto no encontrado al intentar guardar` };
+      const cuserr = new CustomError(500, 'Error en save()', error);
+      return { error: cuserr };
     }
   }
 
@@ -72,7 +76,8 @@ class ContainerFileProducts {
         return { error: `Producto no encontrado para actualizar` };
       }
     } catch (error) {
-      return { error: `Producto no encontrado al intentar actualizar` };
+      const cuserr = new CustomError(500, 'Error en update()', error);
+      return { error: cuserr };
     }
   }
 
@@ -89,7 +94,8 @@ class ContainerFileProducts {
         return { error: `Producto no encontrado para eliminar` };
       }
     } catch (error) {
-      return { error: `Producto no encontrado al intentar eliminar` };
+      const cuserr = new CustomError(500, 'Error en delete()', error);
+      return { error: cuserr };
     }
   }
 }

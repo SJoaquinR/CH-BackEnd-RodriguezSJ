@@ -1,5 +1,5 @@
 const path = require("path");
-const logger = require("../containers/logger.js");
+const logger = require("../utils/logger.js");
 const mongoUsersApi = require("../apis/usersApi.js");
 const ContainerSendMail = require("../containers/sendMail.js");
 const sendMail = new ContainerSendMail();

@@ -1,13 +1,12 @@
 /* -------------------------------- Modulos -------------------------------- */
 const express = require("express");
-const logger = require("../containers/logger.js");
+const logger = require("../utils/logger.js");
 //const ContainerSendMail = require("../containers/sendMail.js");
 const routerRegister = express.Router();
 //const path = require("path");
 const multert = require("multer");
 
 //const usersDAO = require("../DAOs/users.dao.js");
-//const mongoUsersApi = require("../apis/usersApi.js");
 const { getUser, addUser, updateUser, deleteUser } = require("../controllers/register.controller.js");
 
 /* -------------------------------- Middlewares -------------------------------- */
@@ -24,7 +23,6 @@ const storage = multert.diskStorage({
 const upload = multert({ storage: storage });
 
 /* -------------------------------- Instancia de Express ------------------------ */
-//const mongoUsersApi = new usersDAO();
 //const sendMail = new ContainerSendMail();
 /* -------------------------------- Rutas -------------------------------- */
 // https://www.iconfinder.com/free_icons

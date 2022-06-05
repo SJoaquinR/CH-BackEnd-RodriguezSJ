@@ -1,5 +1,10 @@
 const admin = require("firebase-admin");
 const config = require("../utils/config.js");
+const CustomError = require("../classes/CustomError.class.js");
+
+const ProductFirebaseModel = require("../model/products.firebase.model.js");
+const DAO = require("../classes/DAO.class.js");
+
 const URL = config.firebase.rutaCert;
 
 async function start() {
@@ -14,11 +19,12 @@ async function start() {
 }
 start();
 
-class ContenedorFirebase {
+class ContenedorFirebase extends DAO {
   db = admin.firestore();
 
-  constructor(nombreColeccion, esquema) {
-    this.coleccion = db.collection(nombreColeccion, esquema);
+  constructor() {
+    super();
+    this.coleccion = ProductFirebaseModel;
   }
 
   async list(id) {
@@ -31,7 +37,8 @@ class ContenedorFirebase {
         }
       );
     } catch (error) {
-      return { error: `Producto no encontrado` };
+      const cuserr = new CustomError(500, 'Error en list()', error);
+      return { error: cuserr };
     }
   }
 
@@ -47,11 +54,8 @@ class ContenedorFirebase {
       }));
       console.log(response);
     } catch (error) {
-      //this.console.log(error);
-      return {
-        code: "001",
-        msg: "Error al consumir ListarAll()",
-      };
+      const cuserr = new CustomError(500, 'Error en listAll()', error);
+      return { error: cuserr };
     }
   }
 
@@ -65,7 +69,8 @@ class ContenedorFirebase {
 
       return { msg: "Producto Agregado", data: doc };
     } catch (error) {
-      return { error: `Producto no encontrado al intentar guardar` };
+      const cuserr = new CustomError(500, 'Error en save()', error);
+      return { error: cuserr };
     }
   }
 
@@ -82,7 +87,8 @@ class ContenedorFirebase {
         return { error: `Producto no encontrado para actualizar` };
       }
     } catch (error) {
-      return { error: `Producto no encontrado al intentar actualizar` };
+      const cuserr = new CustomError(500, 'Error en update()', error);
+      return { error: cuserr };
     }
   }
 
@@ -99,7 +105,8 @@ class ContenedorFirebase {
         return { error: `Producto no encontrado para eliminar` };
       }
     } catch (error) {
-      return { error: `Producto no encontrado al intentar eliminar` };
+      const cuserr = new CustomError(500, 'Error en delete()', error);
+      return { error: cuserr };
     }
   }
 }

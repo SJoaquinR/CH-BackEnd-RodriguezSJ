@@ -1,17 +1,26 @@
-const mongoose = require("mongoose");
-const config = require("../utils/config.js");
+//const mongoose = require("mongoose");
+//const config = require("../utils/config.js");
+const CustomError = require("../classes/CustomError.class.js");
+const MongoDBClient = require("../classes/MongoDBClient.class.js");
+const logger = require("../utils/logger.js");
 
-const URL = config.mongodb.url;
+const userModel = require("../model/users.model.js");
+const DAO = require("../classes/DAO.class.js");
 
-async function start() {
-  await mongoose.connect(URL);
-}
-start();
+
+// const URL = config.mongodb.url;
+
+// async function start() {
+//   await mongoose.connect(URL);
+// }
+// start();
 //await mongoose.connect(URL);
 
-class ContenedorUsersMongoDB {
-  constructor(nombreColeccion, esquema) {
-    this.coleccion = mongoose.model(nombreColeccion, esquema);
+class ContenedorUsersMongoDB extends DAO {
+  constructor() {
+    super();
+    this.coleccion = userModel;
+    this.conn = new MongoDBClient();
   }
 
   async list(id) {
@@ -25,31 +34,33 @@ class ContenedorUsersMongoDB {
         }
       );
     } catch (error) {
-      return { error: `Usuario no encontrado` };
+      const cuserr = new CustomError(500, "Error en list()", error);
+      return { error: cuserr };
     }
   }
 
   async listAll() {
     try {
+      await this.conn.connect();
       const docs = await this.coleccion.find({});
       return docs;
     } catch (error) {
-      //this.console.log(error);
-      return {
-        code: "001",
-        msg: "Error al consumir ListarAll()",
-      };
+      const cuserr = new CustomError(500, "Error en listAll()", error);
+      return { error: cuserr };
+    } finally {
+      this.conn.disconnect();
+      logger.info(`Elemento listadoAll`);
     }
   }
 
   async login(email, password) {
     try {
       const items = await this.listAll();
-      const item = items.find((item) => item.email == email && item.password == password);
-
-      return (
-        { msg: `Usuario: ${email}`, data: item }
+      const item = items.find(
+        (item) => item.email == email && item.password == password
       );
+
+      return { msg: `Usuario: ${email}`, data: item };
     } catch (error) {
       return { error: `Usuario no encontrado` };
     }
@@ -67,11 +78,17 @@ class ContenedorUsersMongoDB {
       }
 
       const newItem = { ...item, id: idItem };
+
+      await this.conn.connect();
       const doc = await this.coleccion.create(newItem);
 
       return { msg: "Usuario Agregado", data: doc };
     } catch (error) {
-      return { error: `Usuario no encontrado al intentar guardar` };
+      const cuserr = new CustomError(500, "Error en save()", error);
+      return { error: cuserr };
+    } finally {
+      this.conn.disconnect();
+      logger.info(`Elemento guardado ${item}`);
     }
   }
 
@@ -80,9 +97,10 @@ class ContenedorUsersMongoDB {
       const items = await this.listAll();
       const index = items.findIndex((p) => p.id == id);
 
+      await this.conn.connect();
       if (index !== -1) {
         items[index] = item;
-
+        
         let doc = await this.coleccion.updateOne({ id: id }, item);
 
         return { msg: "Usuario actualizado", data: doc };
@@ -90,7 +108,11 @@ class ContenedorUsersMongoDB {
         return { error: `Usuario no encontrado para actualizar` };
       }
     } catch (error) {
-      return { error: `Usuario no encontrado al intentar actualizar` };
+      const cuserr = new CustomError(500, "Error en update()", error);
+      return { error: cuserr };
+    } finally {
+      this.conn.disconnect();
+      logger.info(`Elemento actualizado ${item}`);
     }
   }
 
@@ -99,6 +121,7 @@ class ContenedorUsersMongoDB {
       const items = await this.listAll();
       const index = items.findIndex((p) => p.id == id);
 
+      await this.conn.connect();
       if (index !== -1) {
         items.splice(index, 1);
 
@@ -110,7 +133,11 @@ class ContenedorUsersMongoDB {
         return { error: `Usuario no encontrado para eliminar` };
       }
     } catch (error) {
-      return { error: `Usuario no encontrado al intentar eliminar` };
+      const cuserr = new CustomError(500, "Error en delete()", error);
+      return { error: cuserr };
+    } finally {
+      this.conn.disconnect();
+      logger.info(`Elemento eliminado ${id}`);
     }
   }
 }

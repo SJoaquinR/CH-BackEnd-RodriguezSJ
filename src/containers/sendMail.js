@@ -1,6 +1,6 @@
 const { createTransport } = require("nodemailer");
 const globalUserApi = require("../apis/globalUserApi.js");
-const logger = require("./logger.js");
+const logger = require("../utils/logger.js");
 
 const EMAIL_SERVICE = process.env.EMAIL_SERVICE;
 const PASS_EMAIL = process.env.PASS_EMAIL;

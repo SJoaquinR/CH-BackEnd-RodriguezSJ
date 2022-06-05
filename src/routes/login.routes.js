@@ -1,7 +1,7 @@
 /* -------------------------------- Modulos -------------------------------- */
 const express = require("express");
 const session = require("express-session");
-const logger = require('../containers/logger.js');
+const logger = require('../utils/logger.js');
 //const globalUserApi = require('../apis/globalUserApi.js');
 
 const {login} = require('../controllers/login.controller.js');
@@ -9,10 +9,8 @@ const {login} = require('../controllers/login.controller.js');
 const routerLogin = express.Router();
 
 //const usersDAO = require("../DAOs/users.dao.js");
-//const mongoUsersApi = require("../apis/usersApi.js");
 
 /* -------------------------------- Instancia de Express ------------------------ */
-//const mongoUsersApi = new usersDAO();
 routerLogin.use(session({
   secret: '123456789!@#$%^&*()',
   resave: false,

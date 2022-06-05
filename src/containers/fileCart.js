@@ -1,5 +1,5 @@
 const fs = require("fs");
-
+const CustomError = require("../classes/CustomError.class.js");
 class ContainerFileCarts {
   filePath;
   listProducts;
@@ -19,7 +19,8 @@ class ContainerFileCarts {
         }
       );
     } catch (error) {
-      return { error: `carrito no encontrado` };
+      const cuserr = new CustomError(500, 'Error en list()', error);
+      return { error: cuserr };
     }
   }
 
@@ -34,7 +35,8 @@ class ContainerFileCarts {
       }
       return this.listCarts;
     } catch (error) {
-      return `carritos no encontrados al intentar listar: ${error}`;
+      const cuserr = new CustomError(500, 'Error en listAll()', error);
+      return { error: cuserr };
     }
   }
 
@@ -51,7 +53,8 @@ class ContainerFileCarts {
         return { error: `Carrito no encontrado para actualizar` };
       }
     } catch (error) {
-      return { error: `Carrito no encontrado al intentar actualizar ${error}` };
+      const cuserr = new CustomError(500, 'Error en save()', error);
+      return { error: cuserr };
     }
   }
 
@@ -98,7 +101,8 @@ class ContainerFileCarts {
         return { error: `Carrito no encontrado` };
       }
     } catch (error) {
-      return { error: `No se pudo eliminar el producto` };
+      const cuserr = new CustomError(500, 'Error en delete()', error);
+      return { error: cuserr };
     }
    
   }
