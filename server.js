@@ -8,22 +8,16 @@ const exphbs = require("express-handlebars");
 const logger = require('./src/utils/logger.js');
 
 //const routerProducts = express.Router();
-const routerProducts = require("./src/routes/products.routes");
-const routerCart = require("./src/routes/cart.routes");
-const routerRegister = require("./src/routes/Register.routes");
-const routerLogin = require("./src/routes/login.routes");
+const ProductsRouter = require("./src/routes/products.routes");
+const CartRouter = require("./src/routes/cart.routes");
+const RegisterRouter = require("./src/routes/Register.routes");
+const LoginRouter = require("./src/routes/login.routes");
 
 /* -------------------------------- Instancia de Express ------------------------ */
 const app = express();
 
 /* -------------------------------- Middlewares -------------------------------- */
 app.use(express.static("public"));
-
-routerProducts.use(express.json());
-routerCart.use(express.json());
-routerRegister.use(express.json());
-routerLogin.use(express.json());
-
 app.use(bodyParser.urlencoded({ extended: true }));
 
 /* -------------------------------- Motor de plantillas -------------------------------- */
@@ -68,10 +62,10 @@ if (MODO_CLUSTER && cluster.isMaster) {
 
 /* -------------------------------- Rutas -------------------------------- */
 /* Agregamos routers a la app */
-app.use("/api/productos", routerProducts);
-app.use("/api/carrito", routerCart);
-app.use("/register", routerRegister);
-app.use("/login", routerLogin);
+app.use("/api/productos", (new ProductsRouter()).start());
+app.use("/api/carrito", (new CartRouter()).start());
+app.use("/register", (new RegisterRouter()).start());
+app.use("/login", (new LoginRouter()).start());
 
 //Ruta inicio
 // app.get("/", (req, res) => {

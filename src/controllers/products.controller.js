@@ -1,10 +1,10 @@
 const globalUserApi = require("../apis/globalUserApi.js");
-//const ProductsDAO = require("../services/products.dao.js");
 const ProductsDAO = require("../services/ProductsDAO.mongodb.js");
 const ContainerAdmin = require("../containers/security.js");
 const fileProductsApi = new ProductsDAO();
 const roleAdminApi = new ContainerAdmin();
-
+const logger = require("../utils/logger.js");
+ 
 async function getProduct(id) {
   try {
     const datosUsuario = {
@@ -86,4 +86,69 @@ async function deleteProduct(params) {
   }
 }
 
-module.exports = { getProduct, addProduct, updateProduct, deleteProduct };
+class ProductsController {
+  getProduct = async (req, res) => {
+    try {
+      const { id } = req.params;
+      const response = await getProduct(id);
+  
+      const { datosUsuario, product } = response;
+      res.render("partials/bodyProducts", {
+        datos: datosUsuario,
+        products: product,
+      });
+    } catch (error) {
+      res.status(404).json({ msg: `Error al obtener Productos: ${error}` });
+    }
+  }
+
+  addProduct = async (req, res) => {
+    try {
+      const response = await addProduct(req.body);
+      const { roleAdmin, result } = response;
+      if (roleAdmin) {
+        res.status(401).json(result);
+      } else {
+        res.status(200).json(result);
+      }
+    } catch (error) {
+      res.status(404).json({ msg: `Error al agregar Producto: ${error}` });
+    }
+  }
+
+  updateProduct = async (req, res) => {
+    try {
+      const response = await updateProduct(req.body, req.params);
+      const { roleAdmin, result } = response;
+      if (roleAdmin) {
+        res.status(401).json(result);
+      } else {
+        res.status(200).json(result);
+      }
+    } catch (error) {
+      res.status(404).json({ msg: `Error al actualizar Producto: ${error}` });
+    }
+  }
+
+  deleteProduct = async (req, res) => {
+    try {
+      const response = await deleteProduct(req.params);
+      const { roleAdmin, result } = response;
+      if (roleAdmin) {
+        res.status(401).json(result);
+      } else {
+        res.status(200).json(result);
+      }
+    } catch (error) {
+      res.status(404).json({ msg: `Error al eliminar Producto: ${error}` });
+    }
+  }
+
+  errorProduct = (req, res) => {
+    let { url, method } = req;
+    logger.warn("Ruta %s %s no implementada", url, method);
+    res.send(`Ruta ${method} ${url} no está implementada`);
+  }
+}
+
+module.exports = ProductsController;

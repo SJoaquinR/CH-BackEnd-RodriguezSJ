@@ -67,4 +67,76 @@ async function deleteCart(params) {
     }
 }
 
-module.exports = { getCart, addCart, addProductsCart, deleteProductCart, deleteCart };
+
+class CartController {
+  getCartProduct = async (req, res) => {
+    try {
+      const response = await getCart(req.params);
+  
+      const { datosUsuario, cart } = response;
+      res.render("partials/bodyCart", {
+        datos: datosUsuario,
+        carts: cart,
+      });
+    } catch (error) {
+      res.status(404).json({ msg: `Error al obtener Productos: ${error}` });
+    }
+  }
+
+  addCart = async (req, res) => {
+    try {
+      const response = await addCart();
+      res.status(200).json(response);
+    } catch (error) {
+      res.status(404).json({ msg: `Error al crear un carrito: ${error}` });
+    }
+  }
+
+  addCartProduct = async (req, res) => {
+    try {
+      const result = await addProductsCart(req.params);
+      const { error, response } = result;
+      if (error) {
+        res.status(400).json(response);
+      } else {
+        res.status(200).json(response);
+      }
+    } catch (error) {
+      res
+        .status(404)
+        .json({ msg: `Error al agregar un producto al carrito: ${error}` });
+    }
+  }
+
+  deleteCartProduct = async (req, res) => {
+    try {
+      const result = await deleteProductCart(req.params);
+      const { error, response } = result;
+      if (error) {
+        res.status(400).json(response);
+      }else{
+        res.status(200).json(response);
+      }
+    } catch (error) {
+      res
+        .status(404)
+        .json({ msg: `Error al eliminar un producto del carrito: ${error}` });
+    }
+  }
+
+  deleteCart = async (req, res) => {
+    try {
+      const result = await deleteCart(req.params);
+      const { error, response } = result;
+      if (error) {
+        res.status(400).json(response);
+      }else{
+        res.status(200).json(response);
+      }
+    } catch (error) {
+      res.status(404).json({ msg: `Error al eliminar un carrito: ${error}` });
+    }
+  }
+}
+
+module.exports = CartController;
