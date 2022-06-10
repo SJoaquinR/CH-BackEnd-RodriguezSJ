@@ -93,10 +93,11 @@ class ProductsController {
       const response = await getProduct(id);
   
       const { datosUsuario, product } = response;
-      res.render("partials/bodyProducts", {
-        datos: datosUsuario,
-        products: product,
-      });
+      // res.render("partials/bodyProducts", {
+      //   datos: datosUsuario,
+      //   products: product,
+      // });
+      res.sendStatus(200);
     } catch (error) {
       res.status(404).json({ msg: `Error al obtener Productos: ${error}` });
     }
