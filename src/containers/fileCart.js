@@ -48,7 +48,7 @@ class ContainerFileCarts {
       if (index !== -1) {
         carts[index] = cart;
         fs.writeFileSync(this.filePath, JSON.stringify(carts, null, 2));
-        return { msg: "Producto actualizado", data: carts };
+        return { msg: "Producto actualizado", data: carts[index] };
       } else {
         return { error: `Carrito no encontrado para actualizar` };
       }
@@ -79,7 +79,7 @@ class ContainerFileCarts {
     }
   }
 
-  delete(idCart, idProduct) {
+  delete(idCart, idProd) {
     try {
       const carts = this.listAll();
       const index = carts.findIndex((p) => p.id == idCart);
@@ -87,7 +87,8 @@ class ContainerFileCarts {
       if (index !== -1) {
         const cart = carts[index];
         const products = cart.products;
-        const indexProduct = products.findIndex((p) => p.id == idProduct);
+       
+        const indexProduct = products.findIndex((p) => p.data._id == idProd);
 
         if (indexProduct !== -1) {
           products.splice(indexProduct, 1);
@@ -115,7 +116,7 @@ class ContainerFileCarts {
       if (index !== -1) {
         carts.splice(index, 1);
         fs.writeFileSync(this.filePath, JSON.stringify(carts, null, 2));
-        return { msg: "Carrito eliminado", data: carts };
+        return { msg: "Carrito eliminado", data: idCart };
       } else {
         return { error: `Carrito no encontrado` };
       }

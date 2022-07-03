@@ -10,18 +10,13 @@ async function getProduct(id) {
     const datosUsuario = {
       name: await globalUserApi.get(), //Aca me faltaria armar el await
     };
-    const product = await fileProductsApi.listAll();
+    let product = await fileProductsApi.listAll();
     if (id) {
       product = await fileProductsApi.list(id);
-      //   res.render("partials/bodyProducts", {
-      //     datos: datosUsuario,
-      //     products: product,
-      //   });
     }
-
     return { datosUsuario: datosUsuario, product: product };
   } catch (error) {
-    res.status(404).json({ msg: `Error al obtener Productos: ${error}` });
+    return({ error: `Error al obtener Productos: ${error}` });
   }
 }
 
@@ -91,13 +86,8 @@ class ProductsController {
     try {
       const { id } = req.params;
       const response = await getProduct(id);
-  
-      const { datosUsuario, product } = response;
-      // res.render("partials/bodyProducts", {
-      //   datos: datosUsuario,
-      //   products: product,
-      // });
-      res.sendStatus(200);
+
+      res.status(200).json(response);
     } catch (error) {
       res.status(404).json({ msg: `Error al obtener Productos: ${error}` });
     }
@@ -121,6 +111,7 @@ class ProductsController {
     try {
       const response = await updateProduct(req.body, req.params);
       const { roleAdmin, result } = response;
+
       if (roleAdmin) {
         res.status(401).json(result);
       } else {

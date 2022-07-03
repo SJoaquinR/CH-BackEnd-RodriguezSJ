@@ -1,0 +1,28 @@
+# Product
+components:
+  schemas:
+    Product:
+      type: object
+      required:
+        - id
+        - name
+        - thumbnail
+        - precio
+      properties:
+        id:
+          type: string
+          description: The auto-generated id of the book.
+        name:
+          type: string
+          description: The name of the product.
+        thumbnail:
+          type: string
+          description: The image of the product.
+        price:
+          type: number
+          description: The price of the product.
+      example:
+         id: 4ughd73658fnsk85dh58sk
+         name: desktop computer
+         imagen: https://cdn3.iconfinder.com/data/icons/education-209/64/tube-lab-science-school-128.png
+         price: 123.78

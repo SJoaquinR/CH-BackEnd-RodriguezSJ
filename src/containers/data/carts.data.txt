@@ -44,5 +44,39 @@
         "id": 5
       }
     ]
+  },
+  {
+    "id": "2",
+    "user": {
+      "name": [
+        "pepe"
+      ],
+      "email": [
+        "pepe@hotmail.com"
+      ],
+      "address": [
+        "a la vuelta"
+      ],
+      "phone": [
+        112
+      ]
+    },
+    "timestamp": 1656712729569,
+    "products": [
+      {
+        "msg": "Listado del producto con id: 6279462c61f1a53927db8da1",
+        "data": {
+          "_id": "6279462c61f1a53927db8da1",
+          "timestamp": "1652114988821",
+          "name": "nombreProducto 12",
+          "description": "alguna descripsion 12",
+          "code": "500214571",
+          "thumbnail": "https://cdn3.iconfinder.com/data/icons/education-209/64/microscope-lab-science-school-512.png",
+          "price": 300,
+          "stock": 21,
+          "__v": 0
+        }
+      }
+    ]
   }
 ]

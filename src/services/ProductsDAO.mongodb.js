@@ -25,11 +25,14 @@ class ContenedorMongoDB extends DAO {
   async list(id) {
     try {
       const products = await this.listAll();
-      const product = products.find((product) => product.id == id);
-
+      
+      const product = products.find((product) => product.id == id); 
+      if (undefined === product) {
+        return {error: `Producto no encontrado para el id ${id}`, data: product };
+      }
       return (
         { msg: `Listado del producto con id: ${id}`, data: product } || {
-          error: `Producto no encontrado`,
+          error: `Producto no encontrado para el id ${id}`,
         }
       );
     } catch (error) {
@@ -42,6 +45,7 @@ class ContenedorMongoDB extends DAO {
     try {
       await this.conn.connect();
       const docs = await this.coleccion.find({});
+      
       return docs;
     } catch (error) {
       const cuserr = new CustomError(500, "Error en listAll()", error);
@@ -84,9 +88,7 @@ class ContenedorMongoDB extends DAO {
 
       await this.conn.connect();
       if (index !== -1) {
-        products[index] = product;
-
-        let doc = await this.coleccion.updateOne({ id: id }, product);
+        let doc = await this.coleccion.updateOne({ _id: id }, product);
 
         return { msg: "Producto actualizado", data: doc };
       } else {
@@ -97,7 +99,7 @@ class ContenedorMongoDB extends DAO {
       return { error: cuserr };
     } finally {
       this.conn.disconnect();
-      logger.info(`Elemento actualizado ${product}`);
+      logger.info(`Elemento actualizado ${JSON.stringify(product, null, 2)}`);
     }
   }
 
@@ -108,12 +110,9 @@ class ContenedorMongoDB extends DAO {
 
       await this.conn.connect();
       if (index !== -1) {
-        products.splice(index, 1);
+        let doc = await this.coleccion.deleteOne({ _id: id });
 
-        let doc = await this.coleccion.deleteOne({ id: id });
-
-        //fs.writeFileSync(this.filePath, JSON.stringify(products, null, 2));
-        return { msg: "Producto eliminado", data: products };
+        return { msg: "Producto eliminado", data: doc };
       } else {
         return { error: `Producto no encontrado para eliminar` };
       }

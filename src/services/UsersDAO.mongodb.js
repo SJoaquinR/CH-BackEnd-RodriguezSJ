@@ -53,6 +53,18 @@ class ContenedorUsersMongoDB extends DAO {
     }
   }
 
+  async findUser(email) {
+    try {
+      const items = await this.listAll();
+      const item = items.find(
+        (item) => item.email == email);
+
+      return { msg: `Usuario: ${email}`, data: item };
+    } catch (error) {
+      return { error: `Usuario no encontrado` };
+    }
+  }
+
   async login(email, password) {
     try {
       const items = await this.listAll();

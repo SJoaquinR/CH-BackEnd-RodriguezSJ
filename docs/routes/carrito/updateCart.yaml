@@ -1,0 +1,27 @@
+paths:
+  /api/carrito/{id}:
+    put:
+      summary: Se actualiza carrito
+      tags:
+        - Carrito
+      parameters:
+      - name: id
+        in: path
+        description: Se actualiza el carrito por el ID
+        required: true
+        type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Cart'
+      responses:
+        "200":
+          description: Se actualizo el carrito.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+        "404":
+          description: Carrito no encontrado Error

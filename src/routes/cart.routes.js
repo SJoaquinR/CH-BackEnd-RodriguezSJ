@@ -13,9 +13,11 @@ class CartRouter {
   start() {
     routerCart.get("/:id/productos", this.controller.getCartProduct);
 
+    routerCart.get("/orden/:id", this.controller.getCartOrder);
+
     routerCart.post("/", this.controller.addCart);
 
-    routerCart.post("/:idProd/productos/", this.controller.addCartProduct);
+    routerCart.post("/:idProd/productos/:idCart", this.controller.addCartProduct);
 
     routerCart.delete("/:idCart/productos/:idProd", this.controller.deleteCartProduct);
 

@@ -1,0 +1,23 @@
+# NewProduct
+components:
+  requestBodies:
+    NewProduct:
+      type: object
+      required:
+        - name
+        - thumbnail
+        - price
+      properties:
+        name:
+          type: string
+          description: The name of the product.
+        thumbnail:
+          type: string
+          description: The image of the product.
+        price:
+          type: number
+          description: The price of the product.
+      example:
+         nombre: desktop computer
+         imagen: https://cdn3.iconfinder.com/data/icons/education-209/64/tube-lab-science-school-128.png
+         precio: 123.78
