@@ -11,16 +11,12 @@ const exphbs = require("express-handlebars");
 const logger = require("./src/utils/logger.js");
 const swaggerUi = require("swagger-ui-express");
 
-//const routerProducts = express.Router();
 const ProductsRouter = require("./src/routes/products.routes");
 const CartRouter = require("./src/routes/cart.routes");
 const RegisterRouter = require("./src/routes/Register.routes");
 const LoginRouter = require("./src/routes/login.routes");
 const ChatsRouter = require("./src/routes/chat.routes");
 const { swaggerSpecs } = require("./src/routes/swaggerSpecs.routes.js");
-
-//const ChatContainer = require("./src/controllers/chat.controller.js");
-//const mensajesApi = new ChatContainer('mensajes.json')
 
 const addChatHandlers = require("./src/ws/chat.ws.js");
 
@@ -31,7 +27,7 @@ const httpServer = new HttpServer(app);
 const io = new Socket(httpServer);
 
 io.on("connection", async (socket) => {
-  addChatHandlers(socket, io.sockets);
+  addChatHandlers.configurarSocket(socket, io.sockets);
 });
 
 /* -------------------------------- Middlewares -------------------------------- */
@@ -95,10 +91,6 @@ app.use("/login", new LoginRouter().start());
 app.use("/api/chats", new ChatsRouter().start());
 app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
 
-//Ruta inicio
-// app.get("/", (req, res) => {
-//   res.render('pages/login');
-// });
 
 /* -------------------------- FORK ---------------------------- */
 //node server.js FORK

@@ -18,12 +18,19 @@ const transporter = createTransport({
 class ContainerSendMail {
   constructor() {}
 
-  enviarCorreo(datosUsuario) {
+  enviarCorreo(datosUsuario, subject, text) {
+    if (subject.length <= 0) {
+      subject = "Registro de Usuario";
+    }
+    if (text.length <= 0) {
+      text = "nuevo registro!"
+    }
+
     const emailContent = {
       from: "NodeJS app <noreply@example.com>",
       to: `"nuevo registro!👨‍💻" ${EMAIL_SEND}`,
-      subject: "nuevo registro ✔",
-      text: "nuevo registro!",
+      subject: subject,
+      text: text,
       html: `<h1 style="color: blue;">Datos del usuario: <span style="color: green;">${datosUsuario}</span></h1>`,
     };
     try {

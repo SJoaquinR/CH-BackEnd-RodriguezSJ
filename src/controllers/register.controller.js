@@ -36,7 +36,7 @@ async function addUser(body, file) {
     };
 
     const response = await mongoUsersApi.save(usuario);
-    sendMail.enviarCorreo(`EMAIL: ${usuario.email} \n NOMBRE: ${usuario.name}`);
+    sendMail.enviarCorreo(`EMAIL: ${usuario.email} \n NOMBRE: ${usuario.name}`, "Registro de Usuario", "nuevo registro!");
 
     return response;
     //res.status(200).json(response);

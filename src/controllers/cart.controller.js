@@ -6,6 +6,9 @@ const fileProductsApi = new ProductsDAO();
 const UsersDAOApi = new UsersDAO();
 const cartApi = new ContainerFileCarts();
 
+const ContainerSendMail = require("../containers/sendMail.js");
+const sendMail = new ContainerSendMail();
+
 async function getCart(params) {
   const datosUsuario = {
     name: await globalUserApi.get(),
@@ -103,30 +106,28 @@ class CartController {
   getCartOrder = async (req, res) => {
     try {
       const response = await getCart(req.params);
+
       const products = response.cart.products.map((product) => {
         return {
-          id: product.data._id,
           name: product.data.name,
-          code: product.data.code,
           price: product.data.price,
-          stock: product.data.stock,
         };
       });
 
-      //console.log(dataValue);
-      // const products = response.cart.products.data.map((product) => {
-      //   return {
-      //     name: product.name,
-      //     description: product.description,
-      //     code: product.code,
-      //     thumbnail: product.thumbnail,
-      //     price: product.price,
-      //     stock: product.stock,
-      //   };
-      // });
-      // console.log(products);
+      const order = {
+        productos: products,
+        FechaHora: Date().toLocaleString(),
+        NroOrden: response.cart.timestamp,
+        email: response.cart.user.email[0],
+        estado: "Generada",
+      };
+      
+      globalUserApi.saveEmailSend(order.email);
+      sendMail.enviarCorreo(`\n Nro de orden: ${order.NroOrden} \nFecha y hora: ${order.FechaHora} 
+      \nEmail: ${order.email} \nProductos: ${JSON.stringify(order.productos, null, 2)} \nnEstado: ${order.estado}`
+      , "Orden de productos comprados","Orden de productos comprados");
 
-      res.status(200).json(response);
+      res.status(200).json({ msg: `Nro Orden generada:  ${order.NroOrden}` });
     } catch (error) {
       res.status(404).json({ msg: `Error al obtener Productos: ${error}` });
     }

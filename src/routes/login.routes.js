@@ -26,6 +26,8 @@ class LoginRouter {
 
     routerLogin.post("/", this.controller.startLogin);
 
+    routerLogin.post("/jwt", this.controller.startLoginJWT);  //Con JWT por postman
+
     routerLogin.get("/logout", this.controller.logoutLogin);
 
     routerLogin.get("*", this.controller.errorLogin);

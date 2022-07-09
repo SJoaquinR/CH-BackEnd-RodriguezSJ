@@ -11,13 +11,7 @@ class ChatsRouter {
   }
 
   start() {
-     routerChats.get("/", this.controller.getChat);
-
-    // routerChats.post("/", this.controller.addChat);
-
-    // routerChats.put("/:id", this.controller.updateChat);
-
-    // routerChats.delete("/:id", this.controller.deleteChat);
+    routerChats.get("/", this.controller.getChat);
 
     routerChats.get("*", this.controller.errorChat);
 

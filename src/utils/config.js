@@ -3,7 +3,6 @@ dotenv.config();
 
 const config = {
     mongodb: {
-        //url: 'mongodb://localhost:27017/ecommerce',
         connstr: `mongodb://${process.env.HOSTDB || 'localhost'}:${process.env.PORTDB || 27017}/ecommerce`,
         options: {
             useNewUrlParser: true,
